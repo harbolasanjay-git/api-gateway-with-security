@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: sims-api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: SIMS-USER-SERVICE
+          uri: lb://SIMS-USER-SERVICE
+          predicates:
+            - Path=/user/**
+          filters:
+            - AuthenticationFilter
+        - id: SIMS-PRODUCT-SERVICE
+          uri: lb://SIMS-PRODUCT-SERVICE
+          predicates:
+            - Path=/product/**
+          filters:
+            - AuthenticationFilter
+        - id: SIMS-IDENTITY-SERVICE
+          uri: lb://SIMS-IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+##This is very important to print debug log to identity the issue in api-gateway in security level
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
+    reactor.netty.http.server: DEBUG
